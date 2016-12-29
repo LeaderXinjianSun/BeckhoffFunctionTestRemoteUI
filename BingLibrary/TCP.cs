@@ -93,6 +93,7 @@ namespace BingLibrary.hjb
 
     public partial class TcpIpServer : TcpListener
     {
+        public bool IsConnect { set; get; } = false;
         public TcpIpServer(IPAddress LocalAddr, Int32 Port) : base(LocalAddr, Port)
         {
             Async.RunFuncAsync(ServerStart, null);
@@ -152,6 +153,7 @@ namespace BingLibrary.hjb
             try
             {
                 tcpClient = AcceptTcpClient();
+                IsConnect = true;
             }
             catch { }
         }
@@ -162,6 +164,7 @@ namespace BingLibrary.hjb
             {
                 base.Stop();
                 tcpClient = null;
+                IsConnect = false;
             }
         }
     }

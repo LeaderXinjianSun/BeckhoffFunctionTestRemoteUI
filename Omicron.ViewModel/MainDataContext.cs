@@ -9,6 +9,7 @@ using System.ComponentModel.Composition;
 using SxjLibrary;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.Net;
 
 
 namespace Omicron.ViewModel
@@ -19,36 +20,47 @@ namespace Omicron.ViewModel
         public virtual string AboutPageVisibility { set; get; } = "Collapsed";
         public virtual string HomePageVisibility { set; get; } = "Visible";
         public virtual string Msg { set; get; } = "";
-        public virtual string[] MatraxStyles { set; get; } = new string[3] { "3×3", "4×3", "5×3" };
-        public virtual int MatraxStylesIndex { set; get; } = 0;
-        public virtual int RsN { set; get; } = -1;
-        public virtual int SelectedItemNum { set; get; } = -1;
+        public virtual bool IsTCPConnect { set; get; }
+        public virtual int[] PositionComboBox { set; get; } = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        public virtual int PositionComboBoxSelectedIndex { set; get; } = 0;
         private MessagePrint messagePrint = new MessagePrint();
         private dialog mydialog = new dialog();
+        private string ip = "192.168.100.228";
+        private TcpIpServer tcpIpServer = new TcpIpServer(IPAddress.Parse("192.168.100.228"), 2001);
+
         public void ChoseHomePage()
         {
             AboutPageVisibility = "Collapsed";
             HomePageVisibility = "Visible";
-            Msg = messagePrint.AddMessage("111");
+            //Msg = messagePrint.AddMessage("111");
         }
         public void ChoseAboutPage()
         {
             AboutPageVisibility = "Visible";
             HomePageVisibility = "Collapsed";
         }
-        public void Test()
+        [Initialize]
+        public async void UpdateUI()
         {
-            RsN++;
-            if (RsN > 2)
+            bool f = false;
+            while (true)
             {
-                RsN = 0;
+                IsTCPConnect = tcpIpServer.IsConnect;
+                if (f == false && IsTCPConnect)
+                {
+                    f = true;
+                    Msg = messagePrint.AddMessage("检测到客户端连接");
+                }
+                await Task.Delay(500);
             }
         }
-        [Initialize]
-        public void Init()
+        public async void StartMoveAction()
         {
-            SelectedItemNum = 3;
-            RsN = 3;
+            if (IsTCPConnect)
+            {
+                await tcpIpServer.SendAsync((PositionComboBoxSelectedIndex+1).ToString());
+                Msg = messagePrint.AddMessage("发送： " + (PositionComboBoxSelectedIndex + 1).ToString());
+            }
         }
         [Export(MEF.Contracts.ActionMessage)]
         [ExportMetadata(MEF.Key, "winclose")]

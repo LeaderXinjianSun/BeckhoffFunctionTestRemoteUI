@@ -37,10 +37,10 @@
         
         <StatusBar Grid.Row="3">
             <StatusBarItem>
-                <TextBlock>下位机</TextBlock>
+                <TextBlock>远程主机</TextBlock>
             </StatusBarItem>
             <StatusBarItem>
-                <Ellipse Style="{StaticResource PLCConnectStatus}"></Ellipse>
+                <Ellipse Style="{StaticResource TCPConnectStatus}"></Ellipse>
             </StatusBarItem>
         </StatusBar>
     </Grid>
